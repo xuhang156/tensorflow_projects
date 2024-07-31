@@ -1,8 +1,9 @@
 import numpy as np  
-from keras.utils import to_categorical  # 修改此行  
+from keras.utils import to_categorical
 import gzip  
 import os  
 from network import *
+from show_binary_images import *
 
 # Define file paths  
 train_images_path = './MNIST/train-images-idx3-ubyte.gz'  
@@ -41,7 +42,10 @@ if __name__ == '__main__':
     train_images = load_mnist_images(train_images_path)  
     train_labels = load_mnist_labels(train_labels_path)  
     test_images = load_mnist_images(test_images_path)  
-    test_labels = load_mnist_labels(test_labels_path)  
+    test_labels = load_mnist_labels(test_labels_path)
+
+    # Show image
+    show_image(train_images[4])
 
     # Convert labels to one-hot encoding  
     train_labels = to_categorical(train_labels, 10)  # 修改此行  
@@ -55,9 +59,7 @@ if __name__ == '__main__':
 
     train_images = binaryzation_images(train_images)
     test_images = binaryzation_images(test_images)
-
-    # train_labels = to_categorical(train_labels)
-    # test_labels = to_categorical(test_labels)
+    
 
     network = create_network()
     compile_network(network)
