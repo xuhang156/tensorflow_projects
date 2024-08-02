@@ -61,6 +61,10 @@ if __name__ == '__main__':
     history = model.fit(x_train,y_train,epochs=4,batch_size=512)
     results = model.evaluate(x_test,y_test)
     print(results)
+
+    model_save_path = os.path.join(cur_file_path, 'trained_imdb_model.h5')
+    model.save(model_save_path)
+    
     # part_test = x_test[:100]
     # test_rate = model.predict(x_test)
     # part_test_rate = model.predict(part_test)
