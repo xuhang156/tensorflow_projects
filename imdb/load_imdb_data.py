@@ -1,21 +1,28 @@
 import os
 import pickle
 import numpy as np
-from keras.datasets import imdb
+from keras.datasets import imdb,reuters
 import matplotlib.pyplot as plt
 
-from model import create_model
+from model import *
 
 
-def check_and_download_file(save_path):
-    if 'imdb_train_data.pkl' not in os.listdir(path=save_path):
+def download_file(train_file_name,test_file_name,save_path,model):
+    if train_file_name not in os.listdir(path=save_path):
         # num_worlds: 仅保留训练数据中前10000 个最长出现的单词，低频单词被舍弃
-        (train_data,train_labels),(test_data,test_labels) = imdb.load_data(num_words=10000)
-        with open(os.path.join(save_path,'imdb_train_data.pkl'),'wb') as file:
+        (train_data,train_labels),(test_data,test_labels) = model.load_data(num_words=10000)
+        with open(os.path.join(save_path,train_file_name),'wb') as file:
             pickle.dump((train_data,train_labels),file)
-        
-        with open(os.path.join(save_path,'imdb_test_data.pkl'),'wb') as file:
+        with open(os.path.join(save_path,test_file_name),'wb') as file:
             pickle.dump((test_data,test_labels),file)
+
+# 下载IMDB数据（电影数据库），用于二分类问题
+def check_and_download_imdb_file(save_path):
+    download_file('imdb_train_data.pkl','imdb_test_data.pkl',save_path,imdb)
+
+# 下载路透社新闻数据，用于多分类问题
+def check_and_download_reuters_file(save_path):
+    download_file('reuters_train_data.pkl','reuters_test_data.pkl',save_path,reuters)
 
 def load_local_pkl_file(path):
     with open(path, 'rb') as train_data_file:
@@ -37,10 +44,28 @@ def vectorize_sequences(sequences,dimension = 10000):
         results[i,sequence] = 1.
     return results
 
+def create_and_show_plt(history):
+    history_dict = history.history
+    epochs = range(1, len(history_dict['loss']) + 1)
+    
+    # 颜色列表，颜色数目要至少等于你要绘制的曲线数
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']  # 蓝, 绿, 红, 青, 洋红, 黄, 黑
 
+    # 绘制每条曲线
+    for idx, key in enumerate(history_dict.keys()):
+        values = history_dict[key]
+        color = colors[idx % len(colors)]  # 循环使用颜色列表
+        plt.plot(epochs, values, color, label=key)
+        
+    plt.xlabel('Epochs')
+    plt.ylabel('Values')
+    plt.legend()
+    plt.show()
+    
 if __name__ == '__main__':  
     cur_file_path =os.path.dirname(os.path.abspath(__file__))
     word_index = load_word_index()
+    check_and_download_reuters_file(cur_file_path)
     check_and_download_file(cur_file_path)
 
     train_data,train_labels = load_local_pkl_file(os.path.join(cur_file_path,'imdb_train_data.pkl'))
