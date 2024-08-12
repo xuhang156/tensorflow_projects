@@ -1,7 +1,5 @@
-import numpy as np
-from keras.utils.np_utils import to_categorical
+from util_codes import *
 from load_imdb_data import *
-
 
 class DMOPartId:
 	def __init__(self):
@@ -39,12 +37,12 @@ if __name__ == '__main__':
 
     one_hot_test_labels = to_categorical(test_labels)
 
-    model = create_reuters_model()
+    model = cm.create_fully_connected_multiclass_model()
     history = model.fit(part_x_train,part_y_train,epochs=20,batch_size=512,validation_data=(x_val,y_val))
-    
+    ut.create_and_show_plt(history)
     results = model.evaluate(x_test,one_hot_test_labels)
     print(results)
-    create_and_show_plt(history)
+    ut.create_and_show_plt(history)
 
     model_save_path = os.path.join(cur_file_path, 'trained_reuters_model.h5')
     model.save(model_save_path)

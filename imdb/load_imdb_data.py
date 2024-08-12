@@ -1,11 +1,4 @@
-import os
-import pickle
-import numpy as np
-from keras.datasets import imdb,reuters,boston_housing
-import matplotlib.pyplot as plt
-
-from model import *
-
+from util_codes import *
 
 def download_file(train_file_name,test_file_name,save_path,model,is_words_data = True):
     if train_file_name not in os.listdir(path=save_path):
@@ -52,24 +45,6 @@ def vectorize_sequences(sequences,dimension = 10000):
         results[i,sequence] = 1.
     return results
 
-def create_and_show_plt(history):
-    history_dict = history.history
-    epochs = range(1, len(history_dict['loss']) + 1)
-    
-    # 颜色列表，颜色数目要至少等于你要绘制的曲线数
-    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']  # 蓝, 绿, 红, 青, 洋红, 黄, 黑
-
-    # 绘制每条曲线
-    for idx, key in enumerate(history_dict.keys()):
-        values = history_dict[key]
-        color = colors[idx % len(colors)]  # 循环使用颜色列表
-        plt.plot(epochs, values, color, label=key)
-        
-    plt.xlabel('Epochs')
-    plt.ylabel('Values')
-    plt.legend()
-    plt.show()
-
 if __name__ == '__main__':  
     cur_file_path =os.path.dirname(os.path.abspath(__file__))
     word_index = load_word_index()
@@ -90,33 +65,12 @@ if __name__ == '__main__':
     y_train = np.asarray(train_labels).astype('float32')
     y_test =  np.asarray(test_labels).astype('float32')
 
-    model = create_model()
+    model = util_codes.cm.create_dropout_binary_model()
     history = model.fit(x_train,y_train,epochs=4,batch_size=512)
+    util_codes.ut.create_and_show_plt(history)
     results = model.evaluate(x_test,y_test)
     print(results)
 
     model_save_path = os.path.join(cur_file_path, 'trained_imdb_model.h5')
     model.save(model_save_path)
-    
-    # part_test = x_test[:100]
-    # test_rate = model.predict(x_test)
-    # part_test_rate = model.predict(part_test)
-    # print(model.predict(x_test))
-    
-    
-    # history_dict = history.history
-    # print(history_dict.keys())
-
-    # loss_values = history_dict['loss']
-    # val_loss_values = history_dict['val_loss']
-
-    # epochs = range(1,len(loss_values) + 1)
-
-    # plt.plot(epochs,loss_values, 'bo',label='Training loss')
-    # plt.plot(epochs,val_loss_values, 'b',label='Validation loss')
-    # plt.xlabel('Epochs')
-    # plt.ylabel('Loss')
-    # plt.legend()
-    # plt.show()
-
 

@@ -1,7 +1,4 @@
-from keras.datasets import boston_housing
-
-import numpy as np
-from keras.utils.np_utils import to_categorical
+from util_codes import *
 from load_imdb_data import *
 
 # 标准化数据
@@ -25,7 +22,7 @@ def perform_k_fold_cv(data,targets,k = 4):
         part_data = np.concatenate([data[:i * num_val_samples],data[(i + 1) * num_val_samples:]],axis=0)
         part_targets = np.concatenate([targets[:i * num_val_samples],targets[(i + 1) * num_val_samples:]],axis=0)
 
-        model = create_mse_model(val_data.shape[1])
+        model = cm.create_regression_model(val_data.shape[1])
         model.fit(part_data,part_targets,epochs=num_epochs,batch_size=1,verbose=0)
 
         val_mse,val_mae = model.evaluate(val_data,val_targets,verbose=0)
