@@ -1,5 +1,6 @@
 
 import matplotlib.pyplot as plt
+from keras.utils import image_utils
 
 def create_and_show_plt(history):
     history_dict = history.history
@@ -18,3 +19,18 @@ def create_and_show_plt(history):
     plt.ylabel('Values')
     plt.legend()
     plt.show()
+
+
+def display_images(plt,generator,show_batch):
+    size = 0
+    for data_batch, labels_batch in generator:
+        if show_batch  == size or show_batch < 0 :
+            break
+        size += 1
+        plt.figure(figsize=(10, 10))
+        for i in range(data_batch.shape[0]):
+            plt.subplot(4, 8, i + 1)
+            plt.imshow(image_utils.array_to_img(data_batch[i]))
+            plt.axis('off')
+        plt.show()
+        
