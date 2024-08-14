@@ -52,22 +52,24 @@ class CatsAndDogsFolder:
 ## 2. jpeg解码为RGB像素网格
 ## 3. 将像素网格转换为浮点数张量
 ## 4. 将像素值缩放到[0,1]之间
+## 要点：使用数据增强来更多的生成图片
 def load_images(train_dir,validation_dir):
     from keras.preprocessing.image import ImageDataGenerator
-    train_datagen = ImageDataGenerator(rescale=1./255)
+    train_datagen = ImageDataGenerator(rescale=1./255,rotation_range=40,width_shift_range=0.2,height_shift_range=0.2,shear_range=0.2,zoom_range=0.2,horizontal_flip=True)
     test_datagen = ImageDataGenerator(rescale=1./255)
 
+    ## batch_size:一次性输出32长图片
     train_generator = train_datagen.flow_from_directory(
         train_dir,
         target_size=(150,150),
-        batch_size=20,
+        batch_size=32,
         class_mode='binary'
     )
 
     validation_generator = test_datagen.flow_from_directory(
         validation_dir,
         target_size=(150,150),
-        batch_size=20,
+        batch_size=32,
         class_mode='binary'
     )
     return train_generator,validation_generator
