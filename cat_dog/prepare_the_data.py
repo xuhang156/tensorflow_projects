@@ -55,16 +55,13 @@ class CatsAndDogsFolder:
 ## 要点：使用数据增强来更多的生成图片
 def load_images(train_dir,validation_dir):
     from keras.preprocessing.image import ImageDataGenerator
-    train_datagen = ImageDataGenerator(rescale=1./255,rotation_range=40,width_shift_range=0.2,height_shift_range=0.2,shear_range=0.2,zoom_range=0.2,horizontal_flip=True)
+    from itertools import cycle
+
+    train_datagen = ImageDataGenerator(rescale=1./255, rotation_range=40, width_shift_range=0.2, height_shift_range=0.2, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
     test_datagen = ImageDataGenerator(rescale=1./255)
 
     ## batch_size:一次性输出32长图片
-    train_generator = train_datagen.flow_from_directory(
-        train_dir,
-        target_size=(150,150),
-        batch_size=32,
-        class_mode='binary'
-    )
+    train_generator = train_datagen.flow_from_directory(train_dir,target_size=(150,150),batch_size=32,class_mode='binary')
 
     validation_generator = test_datagen.flow_from_directory(
         validation_dir,
@@ -72,6 +69,8 @@ def load_images(train_dir,validation_dir):
         batch_size=32,
         class_mode='binary'
     )
+    train_generator = cycle(train_generator)
+    validation_generator = cycle(validation_generator)
     return train_generator,validation_generator
 
 
