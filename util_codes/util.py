@@ -1,6 +1,8 @@
 
 import matplotlib.pyplot as plt
 from keras.utils import image_utils
+from keras.preprocessing.image import ImageDataGenerator
+import numpy as np
 
 def create_and_show_plt(history):
     history_dict = history.history
@@ -34,3 +36,26 @@ def display_images(plt,generator,show_batch):
             plt.axis('off')
         plt.show()
         
+
+def extract_features(model, directory, count):
+    features = np.zeros(shape = (count, 4, 4, 512))
+    labels = np.zeros(shape = (count))
+    batch_size = 20
+
+    datagen = ImageDataGenerator(rescale=1./255)
+
+    generator = datagen.flow_from_directory(
+        directory,
+        target_size=(150, 150),
+        batch_size= batch_size,
+        class_mode = 'binary')
+    
+    i = 0
+    for inputs_batch, labels_batch in generator:
+        features_batch = model.predict(inputs_batch)
+        features[i * batch_size : (i + 1) * batch_size] = features_batch
+        labels[i * batch_size : (i + 1) * batch_size] = labels_batch
+        i += 1
+        if i * batch_size >= count:
+            break
+    return features, labels
